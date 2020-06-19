@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- Title Page -->  
+    <title>Registro</title>
+ 
+
+</head>
+<body>
+    <div id="container">
+        <form>
+            <!-- Nombre -->
+            <div id="nombre_div">
+                <label for="name">Nombre:</label>
+                <input type="name">
+            </div>
+            <!-- Ritmo cardíaco -->
+            <div id="pulso_div">
+                <label for="username">Ritmo cardíaco:</label>
+                <input type="numer" min = '40' max = '200'>
+            </div>
+            <div id="enviar_div">
+                <a href="#" class="btn-send">Detalle</a>
+            </div>
+            <div id="img_div">
+                <img id='grafico' />
+            </div>
+        </form>       
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.11/lib/OpenLayers.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script src="{{ url_for('static', filename="js/monitor/registro.js")}}"></script>
+
+
+</body>
+</html>
