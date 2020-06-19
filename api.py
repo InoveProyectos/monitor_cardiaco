@@ -54,12 +54,11 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
 # Indico la carpeta en donde se encuentran los templates html
-APP_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEMPLATE_PATH = os.path.join(APP_PATH, 'monitor_cardiaco')
+APP_PATH = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_PATH = os.path.join(APP_PATH, 'templates')
 TEMPLATE_PATH = os.path.join(TEMPLATE_PATH, 'monitor')
 
-app = Flask(__name__, template_folder='./templates/monitor')
+app = Flask(__name__, template_folder=TEMPLATE_PATH)
 
 @app.route("/")
 def index():
@@ -69,20 +68,26 @@ def index():
 def monitor():
     return render_template('index.html')
 
-@app.route('/monitor/registro')
+@app.route('/monitor/registro', methods=['POST', 'GET'])
 def registro():
-    try:
-        nombre = request.args.get('nombre')
-        if nombre is None:
-            nombre = 'Pedro'
+    if request.method == 'GET':
+        try:
+            return render_template('registro.html')
+        except:
+            return jsonify({'trace': traceback.format_exc()})
 
-        df = pd.read_csv("propiedades.csv")
+    if request.method == 'POST':
+        try:
+            df = pd.read_csv('vikings_female_24.csv')
+            fig, ax = plt.subplots(figsize = (16,9))        
+            ax.plot(df['heart'])
 
-        result = df.to_json()
-        return(result)
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
+            output = io.BytesIO()
+            FigureCanvas(fig).print_png(output)
+            return Response(output.getvalue(), mimetype='image/png')
+            #<img src="data:image/png;base64,image_data_encoded_to_base64'" />
+        except:
+            return jsonify({'trace': traceback.format_exc()})
 
 @app.route('/monitor/tabla')
 def tabla():
