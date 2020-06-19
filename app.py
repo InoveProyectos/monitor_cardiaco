@@ -43,7 +43,7 @@ import traceback
 import io
 import sys
 import os
-
+import base64
 
 import pandas as pd
 import numpy as np
@@ -60,23 +60,29 @@ TEMPLATE_PATH = os.path.join(TEMPLATE_PATH, 'monitor')
 
 app = Flask(__name__, template_folder=TEMPLATE_PATH)
 
+
 @app.route("/")
 def index():
     return redirect('/monitor')
 
+
 @app.route("/monitor")
 def monitor():
+    print('holaa!')
     return render_template('index.html')
+
 
 @app.route('/monitor/registro', methods=['POST', 'GET'])
 def registro():
     if request.method == 'GET':
+        # Si entré por "GET" es porque acabo de cargar la página
         try:
             return render_template('registro.html')
         except:
             return jsonify({'trace': traceback.format_exc()})
 
     if request.method == 'POST':
+        # Si entré por "POST" es porque se ha precionado el botón "Enviar"
         try:
             df = pd.read_csv('vikings_female_24.csv')
             fig, ax = plt.subplots(figsize = (16,9))        
@@ -84,14 +90,17 @@ def registro():
 
             output = io.BytesIO()
             FigureCanvas(fig).print_png(output)
-            return Response(output.getvalue(), mimetype='image/png')
-            #<img src="data:image/png;base64,image_data_encoded_to_base64'" />
+            encoded_img = base64.encodebytes(output.getvalue()),
+            #return jsonify(encoded_img)
+            return Response(encoded_img, mimetype='image/png')
         except:
             return jsonify({'trace': traceback.format_exc()})
+
 
 @app.route('/monitor/tabla')
 def tabla():
     try:
+        # Enviar los datos para completar tabla
         df = pd.read_csv("tabla.csv")
         result = df.to_json()
         return(result)
@@ -103,7 +112,6 @@ def tabla():
 def reporte():
     try:
         # Genero el reporte del usuario solicitado
-
         fig, ax = plt.subplots(figsize = (16,9))        
         img=mpimg.imread('deteccion_estres.png')
         ax.imshow(img)

@@ -10,7 +10,7 @@ $(document).ready(function(){
 
         $.post(url, {name: name, heart_rate: heart_rate},
             function(data) {
-                alert('llego')        
+                $('#div_image').html('<img src="data:image/png;base64,' + data + '" />');      
                     
             }
         );
