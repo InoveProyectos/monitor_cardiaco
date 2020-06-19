@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Presentación de alquileres en Mapa interactivo
+Monitor cardíaco
 ---------------------------
 Autor: Inove Coding School
 Version: 1.0
@@ -42,6 +42,8 @@ __version__ = "1.0"
 import traceback
 import io
 import sys
+import os
+
 
 import pandas as pd
 import numpy as np
@@ -51,22 +53,25 @@ from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 
+# Indico la carpeta en donde se encuentran los templates html
+APP_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_PATH = os.path.join(APP_PATH, 'monitor_cardiaco')
+TEMPLATE_PATH = os.path.join(APP_PATH, 'templates')
+TEMPLATE_PATH = os.path.join(TEMPLATE_PATH, 'monitor')
 
-app = Flask(__name__)
-
+app = Flask(__name__, template_folder='./templates/monitor')
 
 @app.route("/")
 def index():
     return redirect('/monitor')
 
 @app.route("/monitor")
-def alquileres():
+def monitor():
     return render_template('index.html')
 
 @app.route('/monitor/registro')
-def propiedades():
+def registro():
     try:
-
         nombre = request.args.get('nombre')
         if nombre is None:
             nombre = 'Pedro'
@@ -78,7 +83,18 @@ def propiedades():
     except:
         return jsonify({'trace': traceback.format_exc()})
 
-@app.route('/monitor/reporte') # Your API endpoint URL would consist /predict
+
+@app.route('/monitor/tabla')
+def tabla():
+    try:
+        df = pd.read_csv("tabla.csv")
+        result = df.to_json()
+        return(result)
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
+@app.route('/monitor/reporte')
 def reporte():
     try:
         # Genero el reporte del usuario solicitado
@@ -95,29 +111,6 @@ def reporte():
         return Response(output.getvalue(), mimetype='image/png')
     except:
         return jsonify({'trace': traceback.format_exc()})
-
-# @app.route('/alquileres/buscar') # Your API endpoint URL would consist /predict
-# def buscar():
-#     try:
-#         # Utilizo el modulo "meli" para generar un archivo CSV con los alquileres
-
-#         ubicacion = request.args.get('ubicacion')
-#         if ubicacion is None:
-#             ubicacion = 'Capital Federal'
-
-#         meli = ml.mercadolibreAPI()
-#         meli.set_debug(True)
-#         meli.search(ml.inmueble, ubicacion, 10)
-#         df = meli.export('df')
-
-#         return Response(
-#             df.to_csv(),
-#             mimetype="text/csv",
-#             headers={"Content-disposition":
-#             "attachment; filename=propiedades.csv"})
-
-#     except:
-#         return jsonify({'trace': traceback.format_exc()})
 
 
 if __name__ == '__main__':
