@@ -84,16 +84,21 @@ def registro():
     if request.method == 'POST':
         # Si entré por "POST" es porque se ha precionado el botón "Enviar"
         try:
+
+            nombre = request.form.get('name')
+            pulsos = request.form.get('heart_rate')
+
             df = pd.read_csv('vikings_female_24.csv')
             fig, ax = plt.subplots(figsize = (16,9))        
             ax.plot(df['heart'])
 
             output = io.BytesIO()
             FigureCanvas(fig).print_png(output)
-            encoded_img = base64.encodebytes(output.getvalue()),
-            #return jsonify(encoded_img)
+            encoded_img = base64.encodebytes(output.getvalue())
+
             return Response(encoded_img, mimetype='image/png')
         except:
+            print(traceback.format_exc())
             return jsonify({'trace': traceback.format_exc()})
 
 
