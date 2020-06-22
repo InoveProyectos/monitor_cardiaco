@@ -15,24 +15,28 @@
     <header>
         <div >
         </div>
-        <h1><img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" />inove heartbeat input log <img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
+        <h1><img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" />Heartbeat<img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
             <div >
         </div>    
     </header>
     <section class="main">
-    </p>acá tiene que ir la descripción del procedimiento de ingreso</p>
+    </p>Coloque sus datos, nombre y apellido con mayúsculas y separados por un espacio, luego en elsiguiente campo, ingrese su ritmo cardíaco </p>
     
         <form>
             <!-- Nombre -->
             <div id="nombre_div">
-                <label for="name">Nombress:</label>
+                <label for="name">Nombres y apellido:</label>
                 <input type="name">
             </div>
+
+
             <!-- Ritmo cardíaco -->
             <div id="pulso_div">
-                <label for="username">Ritmo cardíaco:</label>
+                <label for="username">Ritmo cardíaco [min 40, max 200]:</label>
                 <input type="numer" min = '40' max = '200'>
             </div>
+            
+
             <div id="enviar_div">
                 <a href="#" class="btn-send">Enviar</a>
             </div>
@@ -627,7 +631,13 @@
         <img src="{{url_for('static', filename='media/ieee.svg')}}" />
         <img src="{{url_for('static', filename='media/WUirG4ox.png.svg')}}" />
         </aside>
-        <footer class="pie"><p>Barra inferior: acá van los enlaces a la pagina de inove</p></footer>
+        <footer class="pie">
+        <p>❍ Dirección: Monroe 271  Belgrano  CABA. CP1428  - Buenos Aires - Argentina.</p>
+        <p>❍ Tel.: 011 5263-9249</p>
+        <p>❍ E-mail: http://info@inove.com.ar</p>
+        
+        </footer>
+        
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.11/lib/OpenLayers.js"></script>
