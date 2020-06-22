@@ -156,6 +156,14 @@ def registro():
             query = 'select time,value from heartrate WHERE name = "{}"'.format(nombre)
             df = pd.read_sql_query(query, conn)
 
+            if(df.shape[0] == 1):   # Hay solo un dato ingresado
+                # Duplico la información
+                df = df.append({
+                                'time': (datetime.now() + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                                'name': nombre,
+                                'value': int(pulsos)},
+                                ignore_index=True)
+
             fig, ax = plt.subplots(figsize = (16,9))        
             ax.plot(df['time'], df['value'])
             ax.get_xaxis().set_visible(False)
@@ -173,8 +181,14 @@ def registro():
 @app.route('/monitor/tabla')
 def tabla():
     try:
+        query = 'SELECT h_order.time, h_order.name, h_order.value, COUNT(name) as count \
+                FROM (SELECT time, name, value FROM heartrate ORDER BY time) as h_order \
+                GROUP BY name ORDER BY time;'
+
+        conn = sqlite3.connect('heartcare.db')
+        df = pd.read_sql_query(query, conn)
+
         # Enviar los datos para completar tabla
-        df = pd.read_csv("tabla.csv")
         result = df.to_json()
         return(result)
     except:
