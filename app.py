@@ -44,6 +44,8 @@ import io
 import sys
 import os
 import base64
+import sqlite3
+from datetime import datetime, timedelta
 
 import pandas as pd
 import numpy as np
@@ -68,8 +70,50 @@ def index():
 
 @app.route("/monitor")
 def monitor():
-    print('holaa!')
     return render_template('index.html')
+
+
+@app.route("/monitor/reset")
+def reset():
+
+    conn = sqlite3.connect('heartcare.db')
+    c = conn.cursor()
+    c.execute('''
+                DROP TABLE IF EXISTS heartrate;
+            ''')
+    c.execute('''CREATE TABLE heartrate(
+            [id] INTEGER PRIMARY KEY AUTOINCREMENT,
+            [time] TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+            [name] STRING NOT NULL,
+            [value] INTEGER NOT NULL
+            )
+            ''')
+
+    df = pd.read_csv('vikings_female_24.csv')
+    df['time_seconds'] = np.arange(len(df))
+    
+    start_date_str = '2019-05-10 12:00:00'
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
+
+    # Calculo la fecha de cada muestra utilizando la fecha de inicio sumado
+    # a los segundos del ensayo
+    df['time'] = df.apply(lambda x: start_date + timedelta(seconds=x['time_seconds']), axis=1)
+
+    # Asigno a todos las filas el nombre de la persona
+    df['name'] = 'vikings_female_24'
+
+    # Renombro el nombre de la columna heart a value para que sea
+    # compatible con la base de datos
+    df.rename(columns={'heart':'value'}, inplace=True)
+    
+    # Extraigo los datos que almacenare en la base de datos y los persisto
+    heartrate = df[ ['time', 'name', 'value'] ]
+    heartrate.to_sql('heartrate', conn, if_exists='replace', index = False)
+
+    # SQL Viewer
+    # https://inloop.github.io/sqlite-viewer/#
+
+    return redirect('/monitor')
 
 
 @app.route('/monitor/registro', methods=['POST', 'GET'])
@@ -85,12 +129,36 @@ def registro():
         # Si entré por "POST" es porque se ha precionado el botón "Enviar"
         try:
 
-            nombre = request.form.get('name')
-            pulsos = request.form.get('heart_rate')
+            nombre = str(request.form.get('name'))
+            pulsos = str(request.form.get('heart_rate'))
 
-            df = pd.read_csv('vikings_female_24.csv')
+            if(nombre is None or pulsos is None or pulsos.isdigit() is False):
+                # Datos ingresados incorrectos
+                return Response(status = 200)
+
+            # Ya que pandas tiene una interfaz comoda para exportar
+            # un dataframe a SQL crearemos un dataframe con los datos
+            # enviados desde la API
+            columns = ['time', 'name', 'value']
+            heartrate = pd.DataFrame(columns=columns)
+            heartrate = heartrate.append({
+                                        'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                        'name': nombre,
+                                        'value': int(pulsos)},
+                                        ignore_index=True)
+
+            # Persisto lo datos en la base de datos
+            conn = sqlite3.connect('heartcare.db')
+            heartrate.to_sql('heartrate', conn, if_exists='append', index = False)
+
+            # Busco todos los registros de ritmo cardíaco realizados a nombre
+            # de la persona
+            query = 'select time,value from heartrate WHERE name = "{}"'.format(nombre)
+            df = pd.read_sql_query(query, conn)
+
             fig, ax = plt.subplots(figsize = (16,9))        
-            ax.plot(df['heart'])
+            ax.plot(df['time'], df['value'])
+            ax.get_xaxis().set_visible(False)
 
             output = io.BytesIO()
             FigureCanvas(fig).print_png(output)
