@@ -10,10 +10,9 @@ $.get(url, function(list) {
 	for(var i= 0; i < size; i++)
 	{
 		name = personas['name'][i];
-		last_record_time = personas['last_record_time'][i];
-		last_record_value = personas['last_record_value'][i];
-		last_record_activity = personas['last_record_activity'][i];
-		record_count = personas['record_count'][i];
+		last_record_time = personas['time'][i];
+		last_record_value = personas['value'][i];
+		record_count = personas['count'][i];
 
 		// Con estos datos se debe completar la tabla en HTML
 
