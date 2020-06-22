@@ -3,8 +3,8 @@ $(document).ready(function(){
     {
         e.preventDefault();
 
-        name = 'Hector'
-        heart_rate = 58
+        name = document.getElementById('nombre').value;
+        heart_rate = document.getElementById('pulsos').value;
 
         var url = window.location.href
 
