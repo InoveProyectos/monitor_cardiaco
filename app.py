@@ -195,17 +195,41 @@ def tabla():
         return jsonify({'trace': traceback.format_exc()})
 
 
-@app.route('/monitor/reporte')
-def reporte():
+@app.route('/monitor/tabla/historico')
+def historico():
     try:
+        nombre = request.args.get('name')
+
+        if nombre is None:
+            # No se ha enviado ningún nombre para mostrar
+            # el histórico, regreso a la tabla
+            return redirect('/monitor')
+
+        
+        # Busco todos los registros de ritmo cardíaco realizados a nombre
+        # de la persona
+        conn = sqlite3.connect('heartcare.db')
+        query = 'select time,value from heartrate WHERE name = "{}"'.format(nombre)
+        df = pd.read_sql_query(query, conn)
+
+        if(df.shape[0] == 0):   # No hay datos ingresados
+            return redirect('/monitor')
+
+        if(df.shape[0] == 1):   # Hay solo un dato ingresado
+            # Duplico la información
+            first_date = datetime.strptime(df.loc[0,'time'], '%Y-%m-%d %H:%M:%S')
+            pulsos = df.loc[0,'value']
+            df = df.append({
+                        'time': (first_date + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                        'name': nombre,
+                        'value': int(pulsos)},
+                        ignore_index=True)
+
         # Genero el reporte del usuario solicitado
         fig, ax = plt.subplots(figsize = (16,9))        
-        img=mpimg.imread('deteccion_estres.png')
-        ax.imshow(img)
-        ax.set_title('Detector de estrés con inteligencia artificial')
+        ax.plot(df['time'], df['value'])
         ax.get_xaxis().set_visible(False)
-        ax.get_yaxis().set_visible(False)
-       
+
         output = io.BytesIO()
         FigureCanvas(fig).print_png(output)
         return Response(output.getvalue(), mimetype='image/png')
