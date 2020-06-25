@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="../../static/style/registro.css" type="text/css">
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <script src="https://kit.fontawesome.com/d604a8edc1.js" crossorigin="anonymous"></script>
+
     <!-- Title Page -->
     <title>Registro</title>
 
@@ -18,33 +20,49 @@
         <header>
             <div>
             </div>
-            <h1><img class="inovelogo"
-                    src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" />Heartbeat📈<img
-                    class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
+            <h1><img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" />Heartbeat
+                <span style="font-size: 100%; color:  hsl(123, 99%, 44%);">
+                    <i class="fas fa-user-md"></i>
+                </span><img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
             <div>
             </div>
         </header>
         <section class="main">
-            </p>Coloque sus datos, nombre y apellido con mayúsculas y separados por un espacio, luego en elsiguiente
+            </p><span style="font-size: 300%; color:  orange;     padding-right: 1%;">
+                    <i class="fas fa-info"></i></span>Coloque sus datos, nombre y apellido con mayúsculas y separados por un espacio, luego en elsiguiente
             campo, ingrese su ritmo cardíaco <br><br></p>
 
             <form>
                 <!-- Nombre -->
                 <div id="nombre_div">
-                    <label for="name">Nombres y apellido:</label>
+                    <span style="font-size: 150%; color:  rgb(114, 52, 230);">
+                        <i class="fas fa-address-card"></i>
+                    </span><label for="name">Nombre y apellido:</label>
                     <input id="nombre" type="name">
                 </div>
-
+                <br>
 
                 <!-- Ritmo cardíaco -->
                 <div id="pulso_div">
-                    <label for="username">Ritmo cardíaco [min 40, max 200]:</label>
+                    <span style="font-size: 150%; color: rgb(114, 52, 230);">
+                        <i class="fas fa-stethoscope"></i>
+                    </span><label for="username">Ritmo cardíaco [min 40, max 200]:</label>
                     <input id="pulsos" type="numer" min='40' max='200'>
                 </div>
-
+                <br>
 
                 <div id="enviar_div">
-                    <a href="#" class="btn-send">⏵⏵Enter⏴⏴</a>
+                    <a href="#" class="btn-send">
+                    <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
+                    <i class="fas fa-caret-right"></i></span>
+                    <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
+                    <i class="fas fa-caret-right"></i></span>
+                    Enter
+                    <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
+                    <i class="fas fa-caret-left"></i></span>
+                    
+                    <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
+                    <i class="fas fa-caret-left"></i></span></a>
                 </div>
             </form>
             <div class="grafico" id='div_image'>
@@ -53,6 +71,7 @@
         </section>
 
         <aside class="lateral">
+
             <div class="pulso">
                 <!-- work in Chrome and Firefox -->
 
@@ -380,10 +399,7 @@
                             d="m 0.00105706,149.91794 37.80564794,0.45395 c 15.229499,0.18286 20.023232,-115.528338 20.023232,-115.528338 1.652408,60.852951 8.359207,117.166428 15.276605,175.976608 5.241279,-28.4496 8.587163,-56.67222 10.669449,-86.02971 l 4.346813,38.33007 3.556483,-22.99805 1.975826,12.77669 c 8.957067,-5.07928 17.914137,-1.98748 26.840057,-2.98122 l 37.77449,0.45395 c 15.22951,0.18286 20.02324,-115.528338 20.02324,-115.528338 1.65241,60.852951 8.3592,117.166428 15.2766,175.976608 5.24129,-28.4496 8.58717,-56.67222 10.66946,-86.02971 l 4.3468,38.33007 3.55649,-22.99805 1.97583,12.77669 c 8.95706,-5.07928 17.91414,-1.98748 27.05065,-2.86773 l 37.9851,0.56743 c 15.22949,0.18286 20.02323,-115.528334 20.02323,-115.528334 1.65241,60.852952 8.35921,117.166424 15.2766,175.976604 5.24128,-28.4496 8.58717,-56.67221 10.66946,-86.02971 l 4.34681,38.33007 3.55648,-22.99804 1.97583,12.77669 c 8.95706,-5.07928 17.91414,-1.98749 26.84006,-2.98123 l 37.77449,0.45395 c 15.22951,0.18286 20.02323,-115.528334 20.02323,-115.528334 1.65241,60.852952 8.35921,117.166424 15.27661,175.976604 5.24128,-28.4496 8.58717,-56.67221 10.66945,-86.02971 l 4.34681,38.33007 3.55648,-22.99804 1.97583,12.77669 c 8.95707,-5.07928 17.91414,-1.98749 26.94535,-2.98123 l 37.8798,0.45394 c 15.2295,0.18286 20.02324,-115.528323 20.02324,-115.528323 1.6524,60.852951 8.3592,117.166413 15.2766,175.976593 5.24128,-28.4496 8.58716,-56.67221 10.66945,-86.02971 l 4.34681,38.33007 3.55648,-22.99804 1.97583,12.77669 c 8.95706,-5.07928 14.76686,-1.90243 23.69277,-2.89617"
                             id="beatline" inkscape:connector-curvature="0"
                             sodipodi:nodetypes="cscccccccscccccccscccccccscccccccsccccccc" />
-                        <a xlink:href="https://www.chaba.de/" target="_blank">
-                            <text id="createdBy" y="296" x="520"
-                                style="font-family: Roboto, sans-serif;fill:red;font-size:5">
-                                created with fun by Uwe Chardon</text></a>
+
                     </g>
                 </svg>
 
@@ -399,7 +415,13 @@
         <footer class="pie">
             <img class="contact1" src="{{url_for('static', filename='media/contact1.png')}}" />
             <img class="contact2" src="{{url_for('static', filename='media/contact2.png')}}" />
-            <p>🚀 Dirección: Monroe 271 Belgrano CABA. CP1428 - Buenos Aires - Argentina 📲 Tel.: 011 5263-9249 📧 E-mail: http://info@inove.com.ar</p>
+            <p><span style="font-size: 100%; color:  hsl(194, 99%, 44%);">
+                    <i class="fas fa-university"></span></i></span> Dirección: Monroe 271 Belgrano CABA. CP1428 - Buenos
+                Aires -
+                Argentina <span style="font-size: 100%; color:  orange;">
+                    <i class="fas fa-mobile-alt"></i></span> Tel.: 011 5263-9249 <span
+                    style="font-size: 100%; color:  hsl(278, 99%, 44%);">
+                    <i class="fas fa-at"></i></span> E-mail: http://info@inove.com.ar</p>
 
         </footer>
 

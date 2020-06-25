@@ -87,6 +87,7 @@ header h1 {
     background-color: rgb(185, 185, 185);
     padding: 20px;
     margin-bottom: auto;
+    font-size: large;
     box-sizing: border-box;
     float: left;
     border-radius: 5px;
@@ -123,7 +124,7 @@ header h1 {
     padding: 1%;
     color: rgb(6, 190, 0);
     text-decoration: solid;
-    font-size: auto;
+    font-size: xx-large;
     font-weight: bolder;
     text-align: center;
     text-decoration: none;
@@ -178,7 +179,7 @@ svg {
     stroke-width: 3;
     stroke-dasharray: 810, 1800;
     animation: heartbeat 5s linear infinite;
-    stroke: #ffff00;
+    stroke: hsl(123, 99%, 44%);
     filter: url(#glow);
 }
 
@@ -303,26 +304,366 @@ svg {
     }
 }
 
-@media screen and (max-width: 800px) {
-    .main {
-        width: 100%;
 
+
+
+@media screen and (max-width: 768px) {
+
+    header {
+        width: 100%;
+        height: auto;
+        margin: 5px 0;
+        padding-top: 1%;
+        padding-bottom: 7%;
+        padding-left: 1%;
+        padding-right: 1%;
+        border-radius: 5px;
+
+    }
+
+    header h1 {
+        position: relative;
+        width: 100%;
+        height: auto;
+        float: center;
+        padding-left: 10px;
+        text-align: center;
+        font-size: 80px;
+        box-sizing: border-box;
+
+    }
+    .main {
+    width: 100%;
+    }
+    .inovelogo {
+        background-color: rgba(55, 15, 128, 0);
+        width: 40%;
+        height: auto;
+        padding-left: 5px;
+        float: left;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+
+    .pythonlogo {
+        visibility: hidden;
+    }
+
+    .contenedor {
+        width: 100%;
     }
 
     .lateral {
         width: 100%;
+        height: auto;
 
     }
+
+    .pulso_div {
+        padding: 0% !important;
+        width: 30%;
+        height: auto;
+        float: left;
+        box-sizing: border-box;
+
+    }
+
+    .grafico img {
+        width: 100% !important;
+        height: auto !important;
+        padding-right: 40% !important;
+        padding: 5px !important;
+        box-sizing: border-box !important;
+        border-radius: 20px !important;
+    }
+
+    .lateral img {
+        width: 60%;
+        height: auto;
+        padding: 0px;
+        align-items: right;
+        box-sizing: border-box;
+        display: flex;
+        padding-right: 20%;
+
+    }
+
+    .pulso {
+        width: 70%;
+        height: auto;
+        display: inline;
+        padding: -100px;
+        box-sizing: border-box;
+
+
+    }
+
+    .pie p {
+        position: relative;
+        width: auto;
+        text-align: center;
+        font-size: 11px;
+        box-sizing: border-box;
+    }
+
+    .contact1 {
+        width: 30%;
+        height: auto;
+        padding-right: 2px;
+        margin-bottom: 10px;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    .contact2 {
+        width: 30%;
+        height: auto;
+        padding-left: 2px;
+        float: right;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+
+}
+
+@media screen and (max-width: 414px) {
+
+    header {
+        width: 100%;
+        height: auto;
+        margin: 5px 0;
+        padding-top: 1%;
+        padding-bottom: 7%;
+        padding-left: 1%;
+        padding-right: 1%;
+        border-radius: 5px;
+
+    }
+
+    header h1 {
+        position: relative;
+        width: auto;
+        height: auto;
+        float: center;
+        padding-left: 0px;
+        text-align: center;
+        font-size: 20px;
+        box-sizing: border-box;
+
+    }
+
+    
+    .inovelogo {
+        background-color: rgba(55, 15, 128, 0);
+        width: 50%;
+        max-width: 100%;
+        height: auto;
+        padding-left: 5px;
+        position: center;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+
+    .pythonlogo {
+        visibility: hidden;
+    }
+
+    .contenedor {
+        width: 100%;
+    }
+    .main {
+        width: 100%;
+        }
+    .lateral {
+        display: none;
+    }
+
+    .pie p {
+        position: relative;
+        width: auto;
+        text-align: center;
+        font-size: 11px;
+        box-sizing: border-box;
+    }
+
+    .contact1 {
+        width: 30%;
+        height: auto;
+        padding-right: 2px;
+        margin-bottom: 10px;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    .contact2 {
+        width: 30%;
+        height: auto;
+        padding-left: 2px;
+        float: right;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+
+}
+
+@media screen and (max-width: 375px) {
+
+    header {
+        width: 100%;
+        height: auto;
+        margin: 5px 0;
+        padding-top: 1%;
+        padding-bottom: 7%;
+        padding-left: 1%;
+        padding-right: 1%;
+        border-radius: 5px;
+
+    }
+
+    header h1 {
+        position: relative;
+        width: 100%;
+        height: auto;
+        float: center;
+        padding-left: 10px;
+        text-align: center;
+        font-size: 40px;
+        box-sizing: border-box;
+
+    }
+
+    .inovelogo {
+        background-color: rgba(55, 15, 128, 0);
+        width: 80%;
+        max-width: 1000%;
+        height: auto;
+        padding-left: 50px;
+        position: center;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+
+    .pythonlogo {
+        visibility: hidden;
+    }
+
+    .contenedor {
+        width: 100%;
+    }
+    .main {
+        width: 100%;
+        }
+    .lateral {
+        display: none;
+    }
+
+    .pie p {
+        position: relative;
+        width: auto;
+        text-align: center;
+        font-size: 11px;
+        box-sizing: border-box;
+    }
+
+    .contact1 {
+        width: 30%;
+        height: auto;
+        padding-right: 2px;
+        margin-bottom: 10px;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    .contact2 {
+        width: 30%;
+        height: auto;
+        padding-left: 2px;
+        float: right;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+
 }
 
 @media screen and (max-width: 360px) {
+
+    header {
+        width: 100%;
+        height: auto;
+        margin: 5px 0;
+        padding-top: 1%;
+        padding-bottom: 7%;
+        padding-left: 1%;
+        padding-right: 1%;
+        border-radius: 5px;
+
+    }
+
+    header h1 {
+        position: relative;
+        width: 100%;
+        height: auto;
+        float: center;
+        padding-left: 10px;
+        text-align: center;
+        font-size: 40px;
+        box-sizing: border-box;
+
+    }
+
+    .inovelogo {
+        background-color: rgba(55, 15, 128, 0);
+        width: 80%;
+        max-width: 1000%;
+        height: auto;
+        padding-left: 50px;
+        position: center;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+
+    .pythonlogo {
+        visibility: hidden;
+    }
+
     .contenedor {
         width: 100%;
-
     }
-
+    .main {
+        width: 100%;
+        }
     .lateral {
         display: none;
-
     }
+
+    .pie p {
+        position: relative;
+        width: auto;
+        text-align: center;
+        font-size: 11px;
+        box-sizing: border-box;
+    }
+
+    .contact1 {
+        width: 30%;
+        height: auto;
+        padding-right: 2px;
+        margin-bottom: 10px;
+        float: left;
+        box-sizing: border-box;
+    }
+
+    .contact2 {
+        width: 30%;
+        height: auto;
+        padding-left: 2px;
+        float: right;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+    }
+
+
 }
