@@ -297,7 +297,7 @@ def historico():
 
         if(df.shape[0] == 1):   # Hay solo un dato ingresado
             # Duplico la información
-            first_date = datetime.strptime(df.loc[0,'time'], '%Y-%m-%d %H:%M:%S.%f.')
+            first_date = datetime.strptime(df.loc[0,'time'], '%Y-%m-%d %H:%M:%S.%f')
             pulsos = df.loc[0,'value']
             df = df.append({
                         'time': (first_date + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S.%f"),
