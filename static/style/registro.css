@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@100;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Play&display=swap');
 
-@import url('href="https://fonts.googleapis.com/css2?family=Play:wght@700&display=swap');
 
 
 * {
@@ -40,6 +40,7 @@ header {
 }
 
 header h1 {
+
     font-family: 'Play', sans-serif;
     background-color: black;
     position: relative;
@@ -54,15 +55,16 @@ header h1 {
 }
 
 .inovelogo {
-    background-color: rgba(55, 15, 128, 0);
+    background-color: rgba(6, 190, 0, 0.39);
     width: 30%;
     max-width: 20%;
     height: auto;
-    padding: 2%;
+    padding: 0.2%;
     position: relative;
     float: left;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: 10px;
+    border-color: rgba(0, 190, 165, 0.452);
 
 
 }
@@ -78,7 +80,22 @@ header h1 {
     box-sizing: border-box;
     border-radius: 15px;
 
+    display:block!important;
+    -webkit-transition:-webkit-transform 0.5s ease-out;
+    -moz-transition:-moz-transform 0.5s ease-out;
+    -o-transition:-o-transform 0.5s ease-out;
+    -ms-transition:-ms-transform 0.5s ease-out;
+    transition:transform 0.5s ease-out;
 
+
+}
+
+.pythonlogo:hover {
+    -moz-transform: scale(1.1);
+    -webkit-transform: scale(1.1);
+    -o-transform: scale(1.1);
+    -ms-transform: scale(1.1);
+    transform: scale(1.1)
 }
 
 
@@ -239,7 +256,7 @@ svg {
     font-size: 21px;
     text-align: center;
 
-   /* -webkit-animation: fadein 2s;*/
+    /* -webkit-animation: fadein 2s;*/
     /* Safari, Chrome and Opera > 12.1 */
     /*-moz-animation: fadein 2s;*/
     /* Firefox < 16 */
@@ -512,7 +529,8 @@ svg {
 
 }
 
-@media screen and (max-width: 375px) {
+
+@media screen and (max-width: 413px) {
 
     header {
         width: 100%;
@@ -593,6 +611,7 @@ svg {
 
 
 }
+
 
 @media screen and (max-width: 360px) {
 
