@@ -8,7 +8,6 @@ $(document).ready(function(){
 function send()
 {
     name = 'equipo1'
-    heart_rate = document.getElementById('pulsos').value;
 
     var url = window.location.href
 
