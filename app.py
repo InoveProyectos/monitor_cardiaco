@@ -54,6 +54,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import paho.mqtt.client as mqtt
 
 # Indico la carpeta en donde se encuentran los templates html
 APP_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -61,7 +62,7 @@ TEMPLATE_PATH = os.path.join(APP_PATH, 'templates')
 TEMPLATE_PATH = os.path.join(TEMPLATE_PATH, 'monitor')
 
 app = Flask(__name__, template_folder=TEMPLATE_PATH)
-
+client = mqtt.Client()
 
 @app.route("/")
 def index():
@@ -80,6 +81,7 @@ def reset():
     c = conn.cursor()
     c.execute('''
                 DROP TABLE IF EXISTS heartrate;
+                DROP TABLE IF EXISTS equipo;
             ''')
     c.execute('''CREATE TABLE heartrate(
             [id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,11 +91,19 @@ def reset():
             )
             ''')
 
+    c.execute('''CREATE TABLE equipo(
+        [id] INTEGER PRIMARY KEY,
+        [name] STRING NOT NULL,
+        [bpm] INTEGER NOT NULL
+        )
+        ''')
+
+
     df = pd.read_csv('vikings_female_24.csv')
     df['time_seconds'] = np.arange(len(df))
     
     start_date_str = '2019-05-10 12:00:00'
-    start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
+    start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S.%f')
 
     # Calculo la fecha de cada muestra utilizando la fecha de inicio sumado
     # a los segundos del ensayo
@@ -114,6 +124,54 @@ def reset():
     # https://inloop.github.io/sqlite-viewer/#
 
     return redirect('/monitor')
+
+
+@app.route('/monitor/equipo', methods=['POST', 'GET'])
+def equipo():
+    if request.method == 'GET':
+        # Si entré por "GET" es porque acabo de cargar la página
+        try:
+            return render_template('equipo.html')
+        except:
+            return jsonify({'trace': traceback.format_exc()})
+
+    if request.method == 'POST':
+        # Si entré por "POST" es porque se ha precionado el botón "Enviar"
+        try:
+            ret= client.publish("/config/flag_HR_web",'1')
+            nombre = str(request.form.get('name'))
+
+            if(nombre is None):
+                # Datos ingresados incorrectos
+                return Response(status = 200)
+
+            # Busco todos los registros de ritmo cardíaco realizados a nombre
+            # de la persona
+            conn = sqlite3.connect('heartcare.db')
+            c = conn.cursor()
+            c.execute('select * FROM (select time from heartrate WHERE name = "{}" order by time desc LIMIT 250) order by time'.format(nombre))
+            query_output = c.fetchone()
+            if query_output == None:
+                print("Invalid query")
+                return Response(status = 200)
+            
+            time = query_output[0]
+
+            query = 'select time,value from heartrate WHERE name = "{}" AND time >= "{}"'.format(nombre,time)
+            df = pd.read_sql_query(query, conn)
+
+            fig, ax = plt.subplots(figsize = (16,9))        
+            ax.plot(df['time'], df['value'])
+            ax.get_xaxis().set_visible(False)
+
+            output = io.BytesIO()
+            FigureCanvas(fig).print_png(output)
+            encoded_img = base64.encodebytes(output.getvalue())
+            plt.close(fig)
+            return Response(encoded_img, mimetype='image/png')
+        except:
+            print(traceback.format_exc())
+            return jsonify({'trace': traceback.format_exc()})
 
 
 @app.route('/monitor/registro', methods=['POST', 'GET'])
@@ -142,7 +200,7 @@ def registro():
             columns = ['time', 'name', 'value']
             heartrate = pd.DataFrame(columns=columns)
             heartrate = heartrate.append({
-                                        'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                        'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
                                         'name': nombre,
                                         'value': int(pulsos)},
                                         ignore_index=True)
@@ -153,13 +211,23 @@ def registro():
 
             # Busco todos los registros de ritmo cardíaco realizados a nombre
             # de la persona
-            query = 'select time,value from heartrate WHERE name = "{}"'.format(nombre)
+            c = conn.cursor()
+            c.execute('select * FROM (select time from heartrate WHERE name = "{}" order by time desc LIMIT 250) order by time'.format(nombre))
+            query_output = c.fetchone()
+            if query_output == None:
+                print("Invalid query")
+                return Response(status = 200)
+            
+            time = query_output[0]
+
+            query = 'select time,value from heartrate WHERE name = "{}" AND time >= "{}"'.format(nombre,time)
+            #query = 'select time,value from heartrate WHERE name = "{}" LIMIT 250'.format(nombre)
             df = pd.read_sql_query(query, conn)
 
             if(df.shape[0] == 1):   # Hay solo un dato ingresado
                 # Duplico la información
                 df = df.append({
-                                'time': (datetime.now() + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                                'time': (datetime.now() + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S.%f"),
                                 'name': nombre,
                                 'value': int(pulsos)},
                                 ignore_index=True)
@@ -171,7 +239,7 @@ def registro():
             output = io.BytesIO()
             FigureCanvas(fig).print_png(output)
             encoded_img = base64.encodebytes(output.getvalue())
-
+            plt.close(fig)
             return Response(encoded_img, mimetype='image/png')
         except:
             print(traceback.format_exc())
@@ -209,18 +277,30 @@ def historico():
         # Busco todos los registros de ritmo cardíaco realizados a nombre
         # de la persona
         conn = sqlite3.connect('heartcare.db')
-        query = 'select time,value from heartrate WHERE name = "{}"'.format(nombre)
+        c = conn.cursor()
+        c.execute('select * FROM (select time from heartrate WHERE name = "{}" order by time desc LIMIT 250) order by time'.format(nombre))
+        query_output = c.fetchone()
+        if query_output == None:
+            print("Invalid query")
+            return Response(status = 200)
+        
+        time = query_output[0]
+
+        query = 'select time,value from heartrate WHERE name = "{}" AND time >= "{}"'.format(nombre,time)
+        #query = 'select time,value from heartrate WHERE name = "{}" LIMIT 250'.format(nombre)
         df = pd.read_sql_query(query, conn)
 
         if(df.shape[0] == 0):   # No hay datos ingresados
             return redirect('/monitor')
 
+        print(df.head())
+
         if(df.shape[0] == 1):   # Hay solo un dato ingresado
             # Duplico la información
-            first_date = datetime.strptime(df.loc[0,'time'], '%Y-%m-%d %H:%M:%S')
+            first_date = datetime.strptime(df.loc[0,'time'], '%Y-%m-%d %H:%M:%S.%f.')
             pulsos = df.loc[0,'value']
             df = df.append({
-                        'time': (first_date + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S"),
+                        'time': (first_date + timedelta(seconds=1)).strftime("%Y-%m-%d %H:%M:%S.%f"),
                         'name': nombre,
                         'value': int(pulsos)},
                         ignore_index=True)
@@ -232,12 +312,58 @@ def historico():
 
         output = io.BytesIO()
         FigureCanvas(fig).print_png(output)
+        plt.close(fig)
         return Response(output.getvalue(), mimetype='image/png')
     except:
         return jsonify({'trace': traceback.format_exc()})
 
 
+def on_connect(client, userdata, flags, rc):
+    print("Conectado - Codigo de resultado: "+str(rc))
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("/movil/HR")
+    #ret= client.publish("/movil/flag_HR",'1')
+
+# Callback cuando se recibe un publish del topico suscripto
+def on_message(client, userdata, msg):
+    mensaje = str(msg.payload.decode("utf-8"))
+    lista = msg.topic.split("/")
+    #print(msg.topic,'msg:',mensaje)
+
+    pulsos = mensaje
+    columns = ['time', 'name', 'value']
+    heartrate = pd.DataFrame(columns=columns)
+    heartrate = heartrate.append({
+                                'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                                'name': 'equipo1',
+                                'value': int(pulsos)},
+                                ignore_index=True)
+
+    # Persisto lo datos en la base de datos
+    conn = sqlite3.connect('heartcare.db')
+    heartrate.to_sql('heartrate', conn, if_exists='append', index = False)
+    #print(msg.topic+" "+str(msg.payload))
+
+def on_publish(client,userdata,result):             #create function for callback
+    #print("data published \n")
+    pass
+
 if __name__ == '__main__':
+  
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.on_publish = on_publish 
+
+    try:
+        client.connect("190.195.235.124", 1883, 60)
+        #client.connect("127.0.0.1", 1883, 60)
+        print("Conectado al servidor MQTT")
+    except:
+        print("No pudo conectarse")
+
+    client.loop_start()
+    
     try:
         port = int(sys.argv[1]) # This is for a command-line argument
     except:
