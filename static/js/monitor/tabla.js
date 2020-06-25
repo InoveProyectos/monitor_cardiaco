@@ -36,7 +36,8 @@ $.get(tabla_url, function(list) {
 		table_data += '<td>'+last_record_time+'</td>';
 		table_data += '<td>'+last_record_value+'</td>';
 		table_data += '<td>'+record_count+'</td>';
-		table_data += '<td><a href="#" class="btn-view" onclick="view(\'' + name + '\')">Ver</a></td>';
+		//table_data += '<td><a href="#" class="btn-view" onclick="view(\'' + name + '\')">Ver</a></td>';
+		table_data += '<td><a href="#" class="btn-view" onclick="view(\'' + name + '\')"><span style="font-size: 3em; color: Tomato;"><i class="fas fa-search"></i></span></a></td>';
 		table_data += '</tr>';
 
 	}
