@@ -6,38 +6,38 @@ Autor: Inove Coding School
 Version: 1.0
  
 Descripcion:
-Se utiliza Flask para crear un WebServer que levanta los datos de alquileres de inmuebles
-y los presenta en un mapa distribuidos por ubicación
- 
+Se utiliza Flask para crear un WebServer que levanta los datos de
+las personas que registran su ritmo cardíaco.
+
 Ejecución: Lanzar el programa y abrir en un navegador la siguiente dirección URL
-http://127.0.0.1:5000/
+NOTA: Si es la primera vez que se lanza este programa crear la base de datos
+entrando a la siguiente URL
+http://127.0.0.1:5000/monitor/reset
 
-Nos deberá aparecer el mapa con los alquileres de la zona, identificados por color:
-- Verde: Alquiler dentro del promedio en precio
-- Amarillo: Alquiler debajo del promedio en precio
-- Rojo: Alquiler por arribba del promedio en precio
-- Azul: Alquiler en dolares US$
+Ingresar a la siguiente URL
+http://127.0.0.1:5000/monitor
 
-- Podremos también visualizar el análisis de los alquileres de la zona
-http://127.0.0.1:5000/reporte
+Nos deberá aparecer el una tabla con todas las personas que registraron
+su ritmo cardíaco en el sistema, de cada una podremos ver el historial
+cargador.
 
-- Podremos visualizar la predicción de costo de alquiler basado
- en el algoritmo de inteligencia artificial implementado
-http://127.0.0.1:5000/prediccion
+- Podremos también generar nuevos registros en el sistema ingresando a:
+http://127.0.0.1:5000/monitor/registro
 
 Requisitos de instalacion:
 
 - Python 3.x
 - Libreriras (incluye los comandos de instalacion)
     pip install numpy
+    pip install matplotlib
     pip install pandas
     pip install -U Flask
+    pip install paho.mqtt
 '''
 
 __author__ = "Inove Coding School"
 __email__ = "INFO@INOVE.COM.AR"
 __version__ = "1.0"
-
 
 import traceback
 import io
@@ -50,6 +50,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 from flask import Flask, request, jsonify, render_template, Response, redirect
+import matplotlib
+matplotlib.use('Agg')   # For multi thread, non-interactive backend (avoid run in main loop)
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
@@ -81,7 +83,6 @@ def reset():
     c = conn.cursor()
     c.execute('''
                 DROP TABLE IF EXISTS heartrate;
-                DROP TABLE IF EXISTS equipo;
             ''')
     c.execute('''CREATE TABLE heartrate(
             [id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,18 +92,10 @@ def reset():
             )
             ''')
 
-    c.execute('''CREATE TABLE equipo(
-        [id] INTEGER PRIMARY KEY,
-        [name] STRING NOT NULL,
-        [bpm] INTEGER NOT NULL
-        )
-        ''')
-
-
     df = pd.read_csv('vikings_female_24.csv')
     df['time_seconds'] = np.arange(len(df))
     
-    start_date_str = '2019-05-10 12:00:00'
+    start_date_str = '2019-05-10 12:00:00.0'
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S.%f')
 
     # Calculo la fecha de cada muestra utilizando la fecha de inicio sumado
@@ -272,7 +265,6 @@ def historico():
             # No se ha enviado ningún nombre para mostrar
             # el histórico, regreso a la tabla
             return redirect('/monitor')
-
         
         # Busco todos los registros de ritmo cardíaco realizados a nombre
         # de la persona
@@ -292,8 +284,6 @@ def historico():
 
         if(df.shape[0] == 0):   # No hay datos ingresados
             return redirect('/monitor')
-
-        print(df.head())
 
         if(df.shape[0] == 1):   # Hay solo un dato ingresado
             # Duplico la información
