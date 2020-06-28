@@ -42,14 +42,16 @@ Descargue el repositorio en su pc y abra el proyecto en su editor de código, lu
 - NumPy (https://numpy.org/)
 
 # Capturas :camera:
-![monitor](static/media/Heartbeat monitor.png)
+Pantalla de monitoreo:
 
-![registro](static/media/Heartbeat register.png)
+![monitor](static/media/monitorexample.jpeg)
+Pantalla de registro:
+![registro](static/media/registerexample.jpeg)
 
 # Autores ✒️
 ### Miembros de Inove (coding school)
-- Hernán Contigiani :octocat:
-- Hector Vergara :octocat:
+:octocat: Hernán Contigiani 
+:octocat: Hector Vergara
 
 # Licencia 📄 :balance_scale:
 Este proyecto está bajo la Licencia de Inove (coding school) para libre descarga y uso. Este proyecto tiene un propósito educativo y de muestra, por ello, no nos responsabilizaremos por su uso indebido. Así mismo, no existe garantía en su implementación debido a que se trata de una demostración de uso gratuito con propósitos educativos. 
