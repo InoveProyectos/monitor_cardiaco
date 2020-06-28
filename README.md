@@ -51,6 +51,7 @@ Pantalla de registro:
 # Autores ✒️
 ### Miembros de Inove (coding school)
 :octocat: Hernán Contigiani 
+
 :octocat: Hector Vergara
 
 # Licencia 📄 :balance_scale:
