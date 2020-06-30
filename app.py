@@ -24,15 +24,6 @@ cargador.
 - Podremos también generar nuevos registros en el sistema ingresando a:
 http://127.0.0.1:5000/monitor/registro
 
-Requisitos de instalacion:
-
-- Python 3.x
-- Libreriras (incluye los comandos de instalacion)
-    pip install numpy
-    pip install matplotlib
-    pip install pandas
-    pip install -U Flask
-    pip install paho.mqtt
 '''
 
 __author__ = "Inove Coding School"
@@ -58,12 +49,7 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import paho.mqtt.client as mqtt
 
-# Indico la carpeta en donde se encuentran los templates html
-APP_PATH = os.path.dirname(os.path.realpath(__file__))
-TEMPLATE_PATH = os.path.join(APP_PATH, 'templates')
-TEMPLATE_PATH = os.path.join(TEMPLATE_PATH, 'monitor')
-
-app = Flask(__name__, template_folder=TEMPLATE_PATH)
+app = Flask(__name__)
 client = mqtt.Client()
 
 @app.route("/")
@@ -73,7 +59,7 @@ def index():
 
 @app.route("/monitor")
 def monitor():
-    return render_template('index.html')
+    return render_template('monitor/index.html')
 
 
 @app.route("/monitor/reset")
@@ -122,31 +108,41 @@ def reset():
 @app.route('/monitor/equipo', methods=['POST', 'GET'])
 def equipo():
     if request.method == 'GET':
+
+        if client.is_connected() is False:
+            try:
+                client.connect("190.195.235.124", 1883, 10)
+                print("Conectado al servidor MQTT")
+                client.loop_start()
+            except:
+                print("No pudo conectarse")
+
         # Si entré por "GET" es porque acabo de cargar la página
         try:
-            return render_template('equipo.html')
+            return render_template('monitor/equipo.html')
         except:
             return jsonify({'trace': traceback.format_exc()})
 
     if request.method == 'POST':
         # Si entré por "POST" es porque se ha precionado el botón "Enviar"
         try:
-            ret= client.publish("/config/flag_HR_web",'1')
+            # Solicito que me sigan reportando los valores HR por MQTT
+            client.publish("/config/flag_HR_web",'1')
             nombre = str(request.form.get('name'))
 
             if(nombre is None):
                 # Datos ingresados incorrectos
-                return Response(status = 200)
+                return Response(status=404)
 
             # Busco todos los registros de ritmo cardíaco realizados a nombre
-            # de la persona
+            # del equipo
             conn = sqlite3.connect('heartcare.db')
             c = conn.cursor()
             c.execute('select * FROM (select time from heartrate WHERE name = "{}" order by time desc LIMIT 250) order by time'.format(nombre))
             query_output = c.fetchone()
             if query_output == None:
                 print("Invalid query")
-                return Response(status = 200)
+                return Response(status=404)
             
             time = query_output[0]
 
@@ -172,7 +168,7 @@ def registro():
     if request.method == 'GET':
         # Si entré por "GET" es porque acabo de cargar la página
         try:
-            return render_template('registro.html')
+            return render_template('monitor/registro.html')
         except:
             return jsonify({'trace': traceback.format_exc()})
 
@@ -185,7 +181,7 @@ def registro():
 
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
-                return Response(status = 200)
+                return Response(status=404)
 
             # Ya que pandas tiene una interfaz comoda para exportar
             # un dataframe a SQL crearemos un dataframe con los datos
@@ -209,7 +205,7 @@ def registro():
             query_output = c.fetchone()
             if query_output == None:
                 print("Invalid query")
-                return Response(status = 200)
+                return Response(status=404)
             
             time = query_output[0]
 
@@ -274,7 +270,7 @@ def historico():
         query_output = c.fetchone()
         if query_output == None:
             print("Invalid query")
-            return Response(status = 200)
+            return Response(status=404)
         
         time = query_output[0]
 
@@ -309,17 +305,14 @@ def historico():
 
 
 def on_connect(client, userdata, flags, rc):
-    print("Conectado - Codigo de resultado: "+str(rc))
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
+    print("MQTT Conectado - Codigo de resultado: "+str(rc))
     client.subscribe("/movil/HR")
-    #ret= client.publish("/movil/flag_HR",'1')
 
 # Callback cuando se recibe un publish del topico suscripto
 def on_message(client, userdata, msg):
     mensaje = str(msg.payload.decode("utf-8"))
-    lista = msg.topic.split("/")
-    #print(msg.topic,'msg:',mensaje)
+    # lista = msg.topic.split("/")
+    # print(msg.topic,'msg:',mensaje)
 
     pulsos = mensaje
     columns = ['time', 'name', 'value']
@@ -339,23 +332,14 @@ def on_publish(client,userdata,result):             #create function for callbac
     #print("data published \n")
     pass
 
+client.on_connect = on_connect
+client.on_message = on_message
+client.on_publish = on_publish
+
 if __name__ == '__main__':
-  
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.on_publish = on_publish 
-
+    print('Inove@Monitor Cardíaco start!')    
     try:
-        client.connect("190.195.235.124", 1883, 60)
-        #client.connect("127.0.0.1", 1883, 60)
-        print("Conectado al servidor MQTT")
-    except:
-        print("No pudo conectarse")
-
-    client.loop_start()
-    
-    try:
-        port = int(sys.argv[1]) # This is for a command-line argument
+        port = int(sys.argv[1])
     except:
         port = 5000 # Puerto default
         
