@@ -32,12 +32,21 @@ def deteccion_estres():
     # mirando la serie "Vikingos"
     df = pd.read_csv('vikings_female_24.csv')
 
+    plt.figure()
+    plt.plot(df['heart'])
+    plt.title('Variación del rítmo cardíaco observando Vikingos')
+    plt.legend(['ritmo cardíaco'])
+    plt.ylabel('pulsos')
+    plt.xlabel('muestras')
+    plt.show()
+
+    # Entrenamiento de una inteligencia artificial para detección de estrés
+    # Autor: Christopher Ottesen
+    # https://dataespresso.com/en/2019/01/30/Stress-detection-with-wearable-devices-and-Machine-Learning/
+
     # Cálculo de la diferencia de tiempo entre pulsos
     R_R = np.diff(df['heart'])
 
-    #fig = plt.figure()
-    #axs1 = fig.add_subplot(121)
-    #axs2 = fig.add_subplot(122)
     gs = gridspec.GridSpec(2, 2)
     plt.figure()
     axs1 = plt.subplot(gs[0, 0]) # row 0, col 0
@@ -102,7 +111,8 @@ def medicion_ritmo_cardiaco():
 
     # Calcular el ritmo cardíaco como la diferencia
     # de tiempo entre los picos
-    delta_time = np.diff(peaks) / 100
+    delta_time_rate = np.diff(peaks)
+    delta_time = delta_time_rate / sample_rate
     promedio = np.mean(delta_time)
     pulsaciones_por_minuto = promedio * 60
     print("Pulsaciones", pulsaciones_por_minuto)
@@ -145,6 +155,8 @@ def medicion_ritmo_cardiaco():
 
 
     # Veamos ahora el potencial de heartpy
+    # Autor: Paul van Gent
+    # https://github.com/paulvangentcom/heartrate_analysis_python/blob/master/examples/1_regular_PPG/Analysing_a_PPG_signal.ipynb
     # Ejemplo 1
     data, timer = hp.load_exampledata(0)
     sample_rate = 100
